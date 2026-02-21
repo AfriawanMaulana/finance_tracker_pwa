@@ -1,7 +1,7 @@
 "use server";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { createSession } from "@/lib/auth/session";
+import { createSession, deleteSession } from "@/lib/auth/session";
 import { signInSchema } from "@/schemas/auth/sign-in.schema";
 import { SignInState } from "@/types/auth";
 import bcrypt from "bcryptjs";
@@ -50,4 +50,10 @@ export async function loginAction(
   await createSession(user.id);
 
   redirect("/");
+}
+
+export async function logoutAction() {
+  await deleteSession();
+
+  redirect("/signup");
 }

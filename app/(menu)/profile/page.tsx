@@ -1,6 +1,7 @@
 import { Avatar, AvatarBadge, AvatarImage } from "@/components/ui/avatar";
 import { getCurrentUser } from "@/lib/auth/session";
-import { CircleUser, Mail, Pencil, Settings } from "lucide-react";
+import { logoutAction } from "@/app/actions/auth/login";
+import { CircleUser, LogOut, Mail, Settings } from "lucide-react";
 import Link from "next/link";
 
 export default async function ProfilePage() {
@@ -19,7 +20,7 @@ export default async function ProfilePage() {
       </div> */}
 
       {/* User Informations */}
-      <div className="flex flex-col gap-5 w-full bg-foreground/5 p-4 rounded-xl">
+      <div className="flex flex-col gap-5 w-full overflow-y-auto bg-foreground/5 p-4 rounded-xl">
         {/* Email */}
         <div className="flex items-center gap-6">
           <span className="bg-slate-400/5 p-2 rounded-md">
@@ -44,7 +45,7 @@ export default async function ProfilePage() {
 
       {/* Settings */}
       <div className="w-full space-y-2">
-        <p>Configurations</p>
+        <p>Settings</p>
         <Link
           href={"/edit-profile"}
           className="inline-flex gap-4 items-center w-full bg-foreground/5 p-4 rounded-xl"
@@ -52,6 +53,13 @@ export default async function ProfilePage() {
           <Settings />
           Edit Profile
         </Link>
+        <button
+          onClick={logoutAction}
+          className="inline-flex gap-4 items-center w-full bg-foreground/5 p-4 rounded-xl"
+        >
+          <LogOut />
+          Log Out
+        </button>
       </div>
     </div>
   );
