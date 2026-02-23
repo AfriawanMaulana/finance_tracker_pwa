@@ -24,12 +24,18 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { createMilestoneAction } from "@/app/actions/create-milestone";
+import { createMilestoneAction } from "@/app/actions/crud-milestone";
+
+const initialState = { success: false };
 
 export default function MilestoneForm() {
   const [date, setDate] = React.useState<Date>();
   const [imageUrl, setImageUrl] = React.useState<string>("");
   const [imgError, setImgError] = React.useState<string>("");
+  const [state, formAction, isPending] = React.useActionState(
+    createMilestoneAction,
+    initialState
+  );
 
   const MAX_SIZE = 2 * 1024 * 1024;
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,7 +64,7 @@ export default function MilestoneForm() {
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
-        <form action={createMilestoneAction} className="overflow-y-auto">
+        <form action={formAction} className="overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Create New Target</DialogTitle>
             <DialogDescription>
@@ -133,7 +139,7 @@ export default function MilestoneForm() {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit">Save</Button>
+            <Button type="submit">{isPending ? "Saving..." : "Save"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

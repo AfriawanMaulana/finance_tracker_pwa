@@ -1,14 +1,22 @@
-import BottomNavbar from "@/components/layout/BottomNavbar";
+"use client";
 
-export default async function MainLayout({
+import BottomNavbar from "@/components/layout/BottomNavbar";
+import { usePathname } from "next/navigation";
+
+export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  console.log(pathname);
+
+  const hideNavbar = pathname.startsWith("/milestones/");
+
   return (
-    <section>
-      <main>{children}</main>
-      <BottomNavbar />
-    </section>
+    <div>
+      {children}
+      {!hideNavbar && <BottomNavbar />}
+    </div>
   );
 }

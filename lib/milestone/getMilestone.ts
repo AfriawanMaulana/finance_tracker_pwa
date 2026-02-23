@@ -14,3 +14,15 @@ export async function getMilestones() {
 
   return data;
 }
+
+export async function milestoneDetail(id: string) {
+  const user = await getCurrentUser();
+  if (!user) return null;
+
+  const [data] = await db
+    .select()
+    .from(milestones)
+    .where(eq(milestones.id, id));
+
+  return data;
+}

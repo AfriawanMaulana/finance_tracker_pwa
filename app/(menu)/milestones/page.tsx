@@ -3,13 +3,14 @@ import { Progress } from "@/components/ui/progress";
 import { getMilestones } from "@/lib/milestone/getMilestone";
 import { Bitcoin, Target } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default async function MilestonesPage() {
   const milestones = await getMilestones();
   const maxTotalMilestones: number = 3;
 
   return (
-    <div className="p-6 flex flex-col space-y-8 w-full h-screen">
+    <div className="p-6 flex flex-col space-y-8 w-full h-auto overflow-y-auto">
       {/* Header */}
       <div className="flex gap-4 items-center">
         <Bitcoin size={50} className="text-primary" />
@@ -28,8 +29,9 @@ export default async function MilestonesPage() {
         </div>
       </div>
       {milestones.map((item) => (
-        <div
+        <Link
           key={item.title}
+          href={`/milestones/${item.id}`}
           className="flex gap-6 bg-foreground/5 rounded-xl p-4"
         >
           <Image
@@ -74,9 +76,11 @@ export default async function MilestonesPage() {
               )}
             />
           </div>
-        </div>
+        </Link>
       ))}
-      <MilestoneForm />
+
+      {milestones.length === 0 ||
+        (milestones.length < maxTotalMilestones && <MilestoneForm />)}
     </div>
   );
 }

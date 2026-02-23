@@ -3,8 +3,15 @@ import { db } from "@/db";
 import { milestones } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth/session";
 import { supabase } from "@/supabase/client";
+import { eq, sql } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
-export async function createMilestoneAction(formData: FormData) {
+// Create New Milestone
+export async function createMilestoneAction(
+  _prevState: { success: boolean },
+  formData: FormData
+) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
@@ -38,7 +45,7 @@ export async function createMilestoneAction(formData: FormData) {
     imageUrl = data.publicUrl;
   }
 
-  await db.insert(milestones).values({
+  const data = await db.insert(milestones).values({
     userId: user.id,
     title,
     targetAmount: String(targetAmount),
@@ -47,5 +54,36 @@ export async function createMilestoneAction(formData: FormData) {
     imageUrl,
   });
 
-  console.log("success");
+  if (!data) return { success: false };
+
+  revalidatePath("/milestones");
+  return { success: true };
+}
+
+// Update Milestone Balance
+export async function updateCurrentBalance(
+  _prevState: { success: boolean },
+  formData: FormData
+) {
+  const amount = Number(formData.get("amount"));
+  const id = String(formData.get("id"));
+  if (!Number.isFinite(amount) && amount <= 0) return { success: false };
+
+  await db
+    .update(milestones)
+    .set({
+      currentAmount: sql`${milestones.currentAmount} + ${amount}`,
+    })
+    .where(eq(milestones.id, id));
+
+  revalidatePath(`/milestones/${id}`);
+  return { success: true };
+}
+
+// Delete Milestone
+export async function deleteMilestone(id: string) {
+  await db.delete(milestones).where(eq(milestones.id, id));
+
+  console.log("Success Delete", id);
+  redirect("/milestones");
 }
